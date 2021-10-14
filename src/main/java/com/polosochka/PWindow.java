@@ -1,3 +1,5 @@
+package com.polosochka;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -58,10 +60,6 @@ public class PWindow {
             // Create a new blank cursor.
             transparentCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                     cursorImg, new Point(0, 0), "blank cursor");
-
-            //Default game cursor
-            //Image image = Utils.loadBuf("data/textures/pointer1.png");
-            //cursor1 = toolkit.createCustomCursor(image , new Point(image.getWidth(null) / 2, image.getHeight(null) / 2), "Cursor 1");
 
         } catch (Exception e) {
             Logger.reportError("WindowImpl", "Problems with cursor creating.", e);
@@ -124,11 +122,6 @@ public class PWindow {
         frame.add(canvas);
 
         canvas.setFocusTraversalKeysEnabled(false);
-//
-//        JDInputHandler ih = new JDInputHandler();
-//
-//        inputSystem = new InputSystem(ih);
-//        ih.link(canvas);
 
         canvas.setFocusable(true);
 

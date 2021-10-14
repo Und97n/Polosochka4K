@@ -1,3 +1,5 @@
+package com.polosochka;
+
 public class Logger {
     public static void write(String context, String msg, String logLevel) {
         System.out.println(logLevel + ": " + context + ": " + msg);
