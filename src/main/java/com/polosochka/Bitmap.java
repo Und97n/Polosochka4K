@@ -1,3 +1,5 @@
+package com.polosochka;
+
 import java.util.Arrays;
 
 public class Bitmap {
@@ -49,7 +51,7 @@ public class Bitmap {
      * @param y - y position of subimage on source image
      * @param width - width of subimage
      * @param height - height of subimage
-     * @return new Bitmap, that is part of source image
+     * @return new com.polosochka.Bitmap, that is part of source image
      *
      * @throws IllegalArgumentException if arguments is negative or subimage is outside of source image
      */

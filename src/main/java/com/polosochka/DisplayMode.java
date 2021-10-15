@@ -1,3 +1,5 @@
+package com.polosochka;
+
 public class DisplayMode {
     private final int contentWidth, contentHeight;
 
