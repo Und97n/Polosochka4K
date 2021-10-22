@@ -7,11 +7,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serial;
 
 public class Utils {
     public static class FileException extends Exception {
-        @Serial
         private static final long serialVersionUID = 1L;
 
         public FileException(String message, Exception cause, String filePath) {
@@ -20,7 +18,6 @@ public class Utils {
     }
 
     public static class FileLoadingException extends FileException {
-        @Serial
         private static final long serialVersionUID = 1L;
 
         public FileLoadingException(String message, Exception cause, String filePath) {
@@ -29,7 +26,6 @@ public class Utils {
     }
 
     public static class FileSavingException extends FileException {
-        @Serial
         private static final long serialVersionUID = 1L;
 
         public FileSavingException(String message, Exception cause, String path) {
@@ -118,42 +114,6 @@ public class Utils {
         } catch (IOException e) {
             throw new FileSavingException("Problems with file saving!", e, f.getPath());
         }
-    }
-
-    public static Integer parseInteger(String data) {
-        int value;
-
-        try {
-            value = Integer.parseInt(data);
-        } catch (Exception e) {
-            return null;
-        }
-
-        return value;
-    }
-
-    public static Double parseDouble(String data) {
-        double value;
-
-        try {
-            value = Double.parseDouble(data);
-        } catch (Exception e) {
-            return null;
-        }
-
-        return value;
-    }
-
-    public static Boolean parseBoolean(String s) {
-        if (s == null || s.isEmpty()) {
-            return null;
-        }
-
-        return switch (s.toLowerCase()) {
-            case "yes", "true", "y" -> true;
-            case "no", "false", "n" -> false;
-            default -> null;
-        };
     }
 
     public static int border(int value, int minBorder, int maxBorder) {
