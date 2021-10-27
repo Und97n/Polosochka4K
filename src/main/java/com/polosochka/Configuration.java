@@ -1,14 +1,15 @@
 package com.polosochka;
 
-import javax.sound.sampled.Line;
 import java.io.*;
-import java.util.ArrayList;
 
 public class Configuration {
-    public Bitmap image;
+    public Bitmap image, background;
     public Stripe[] lines;
     public Stripe[] linesSorted;
     public double stripeHeight;
+
+    public double fullTime = 6d;
+    public double minDelta = 1.0 / 60.0;
 
     private int counter = 0;
 
@@ -23,32 +24,59 @@ public class Configuration {
 
     private void readFromInputStream(InputStream inputStream) throws IOException, Utils.FileLoadingException {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-            String imagePath = br.readLine();
-
-            if (imagePath == null) {
-                throw new IOException("No path to the image!");
-            }
-
-            image = Utils.loadBitmap(imagePath);
-
             String strLine;
-            strLine = br.readLine();
-            if (strLine == null) {
-                throw new IOException("Config file is empty!");
-            }
-            try {
-                int n = Integer.parseInt(strLine);
-                lines = new Stripe[n];
-                linesSorted = new Stripe[n];
-            } catch (NumberFormatException e) {
-                throw new IOException("First config line is formatted incorrectly.");
-            }
 
             while ((strLine = br.readLine()) != null) {
-                strLine = strLine.trim();
-                if (!strLine.isEmpty()) {
-                    loadLine(strLine);
+                String ss = strLine.trim();
+
+                if (!ss.isEmpty()) {
+                    String[] arr = ss.split("=");
+                    if (arr.length <= 1) {
+                        // It means, that options section is over
+                        break;
+                    } else if (arr.length > 2) {
+                        throw new IOException("Config line is formatted incorrectly: " + strLine);
+                    } else {
+                        switch (arr[0].trim()) {
+                            case "image":
+                                image = Utils.loadBitmap(arr[1].trim());
+                                break;
+                            case "back":
+                                background = Utils.loadBitmap(arr[1].trim());
+                                break;
+                            case "n":
+                                int n = Integer.parseInt(arr[1].trim());
+                                lines = new Stripe[n];
+                                linesSorted = new Stripe[n];
+                                break;
+                            case "minDelta":
+                               minDelta = Double.parseDouble(arr[1].trim());
+                                break;
+                            case "fullTime":
+                                fullTime = Double.parseDouble(arr[1].trim());
+                                break;
+                            default:
+                                throw new IOException("Unknown option line: " + strLine);
+                        }
+                    }
                 }
+            }
+
+            if (image == null) {
+                throw new IOException("No 'image' (picture to be drawn) option in config file!");
+            }
+
+            if(lines == null || linesSorted == null) {
+                throw new IOException("No 'n' (number of lines) option in config file!");
+            }
+
+            if (strLine != null) {
+                do {
+                    strLine = strLine.trim();
+                    if (!strLine.isEmpty()) {
+                        loadLine(strLine);
+                    }
+                } while ((strLine = br.readLine()) != null);
             }
 
             stripeHeight = image.height / (double) lines.length;
@@ -57,7 +85,7 @@ public class Configuration {
         // Fill missing stripes
         for (int index = 0; index < linesSorted.length; ++index) {
             if (linesSorted[index] == null) {
-                Stripe s = new Stripe(index, 6d/linesSorted.length, 1);
+                Stripe s = new Stripe(index, fullTime/linesSorted.length, 1);
                 linesSorted[index] = s;
                 lines[counter++] = s;
             }
@@ -69,7 +97,9 @@ public class Configuration {
             String[] args = line.split(":");
             if (args.length != 2 && args.length != 3) throw new NumberFormatException();
 
-            Stripe s = new Stripe(Integer.parseInt(args[0]), Double.parseDouble(args[1]) / 1000d, args.length == 3 ? Double.parseDouble(args[2]) : 1);
+            Stripe s = new Stripe(Integer.parseInt(args[0].trim()),
+                    Math.max(Double.parseDouble(args[1].trim()) / 1000d, minDelta),
+                    args.length == 3 ? Double.parseDouble(args[2].trim()) : 1);
 
             if (linesSorted[s.getIndex()] != null) {
                 throw new IOException("Config line '" + line + "' is formatted incorrectly: stripe duplication (index '" + s.getIndex() + ").");

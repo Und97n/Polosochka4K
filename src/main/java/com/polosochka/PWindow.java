@@ -2,12 +2,10 @@ package com.polosochka;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 
 public class PWindow {
     public static final boolean SHOW_FPS_OPTION = true;
@@ -72,7 +70,7 @@ public class PWindow {
         }
     }
 
-    public PWindow(String name, String upperRightText, int windowWidth, int windowHeight, DisplayMode dm) {
+    public PWindow(String name, String upperRightText, int windowWidth, int windowHeight, DisplayMode dm, Consumer<KeyEvent> eventHandler) {
         this.upperRightText = upperRightText;
 
         this.dm = dm;
@@ -130,6 +128,15 @@ public class PWindow {
             @Override
             public void componentResized(ComponentEvent e) {
                 reshape(e.getComponent().getWidth(), e.getComponent().getHeight());
+            }
+        });
+
+        canvas.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                if (eventHandler != null) {
+                    eventHandler.accept(keyEvent);
+                }
             }
         });
 
