@@ -85,7 +85,7 @@ public class Configuration {
         // Fill missing stripes
         for (int index = 0; index < linesSorted.length; ++index) {
             if (linesSorted[index] == null) {
-                Stripe s = new Stripe(index, fullTime/linesSorted.length, 1);
+                Stripe s = new Stripe(index, Math.max(fullTime/linesSorted.length, minDelta), 1);
                 linesSorted[index] = s;
                 lines[counter++] = s;
             }
