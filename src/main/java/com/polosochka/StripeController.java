@@ -17,10 +17,9 @@ public class StripeController {
                 }
 
                 if (stripeOrderCounter >= 0 && stripeOrderCounter < conf.lines.length - 1) {
-                    ++stripeOrderCounter;
                     assert (screen.width == conf.image.width) && (screen.height == conf.image.height);
 
-                    Stripe s = conf.lines[stripeOrderCounter];
+                    Stripe s = conf.lines[stripeOrderCounter++];
 
                     s.draw(conf.image, screen);
 

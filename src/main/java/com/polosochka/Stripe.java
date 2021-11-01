@@ -15,16 +15,30 @@ public class Stripe {
     }
 
     // We have ARGB color, each byte of int is a color component
-    public static int mixColor(int orig, double transparency) {
-        assert transparency >= 0 && transparency <= 1;
-        return (orig & 0xffffff) | ((int) (transparency * 255) << 24);
+    public static int mixColor(int bckg, int color, double alpha) {
+        assert alpha >= 0 && alpha <= 1;
+        int r1 = 0xFF & (color >> 16);
+        int g1 = 0xFF & (color >> 8);
+        int b1 = 0xFF & (color);
+
+        int r2 = 0xFF & (bckg >> 16);
+        int g2 = 0xFF & (bckg >> 8);
+        int b2 = 0xFF & (bckg);
+
+        int r = (int) Utils.border(r1 * alpha + r2 * (1.0 - alpha), 0, 255);
+        int g = (int) Utils.border(g1 * alpha + g2 * (1.0 - alpha), 0, 255);
+        int b = (int) Utils.border(b1 * alpha + b2 * (1.0 - alpha), 0, 255);
+
+        int resultColor = 0xff000000 | (r << 16) | (g << 8) | b;
+
+        return resultColor;
     }
 
     public void draw(Bitmap sourceImage, Bitmap screen) {
         final int w = screen.width;
         for (int y = drawCacheSY; y < drawCacheEY; ++y) {
             for (int x = 0; x < w; ++x) {
-                screen.pixels[w * y + x] = mixColor(sourceImage.pixels[w * y + x], transparency);
+                screen.pixels[w * y + x] = mixColor(screen.pixels[w * y + x], sourceImage.pixels[w * y + x], transparency);
             }
         }
     }
