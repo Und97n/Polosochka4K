@@ -16,7 +16,7 @@ public class StripeController {
                     screen.draw_SC(conf.background, 0, 0, 1 ,1);
                 }
 
-                if (stripeOrderCounter >= 0 && stripeOrderCounter < conf.lines.length - 1) {
+                if (stripeOrderCounter >= 0 && stripeOrderCounter < conf.lines.length) {
                     assert (screen.width == conf.image.width) && (screen.height == conf.image.height);
 
                     Stripe s = conf.lines[stripeOrderCounter++];
