@@ -13,12 +13,11 @@ public class Configuration {
     private int counter = 0;
 
     public void readConfigFile(String path) throws IOException, Utils.FileLoadingException {
-        InputStream is = Configuration.class.getClassLoader().getResourceAsStream(path);
-        if (is == null) {
-            throw new FileNotFoundException();
-        }
+        InputStream is = new FileInputStream(path);
 
         readFromInputStream(is);
+
+        is.close();
     }
 
     private void readFromInputStream(InputStream inputStream) throws IOException, Utils.FileLoadingException {
