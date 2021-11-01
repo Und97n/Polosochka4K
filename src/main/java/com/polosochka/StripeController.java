@@ -2,14 +2,13 @@ package com.polosochka;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 public class StripeController {
     private static Configuration conf;
 
-    private static int stripeOrderCounter = 0;
+    private static int stripeOrderCounter = -1;
 
-    public static void action(double timeDelta, Bitmap screen) throws InterruptedException {
+    public static double action(Bitmap screen) throws InterruptedException {
         if (conf != null) {
             synchronized (StripeController.class) {
                 if (stripeOrderCounter <= 0 && conf.background != null) {
@@ -23,16 +22,12 @@ public class StripeController {
 
                     s.draw(conf.image, screen);
 
-                    double currentStripeTime = s.getDelay();
-//            double sleepTime = Utils.border(currentStripeTime - timeDelta, 0, 1);
-                    double sleepTime = Math.max(currentStripeTime - timeDelta, 0);
-
-                    Thread.sleep((long) (sleepTime * 1000));
-                } else {
-                    Thread.sleep(17);
+                    return s.getDelay();
                 }
             }
         }
+
+        return 0.02;
     }
 
     private static void eventHandler(KeyEvent e) {
@@ -61,6 +56,6 @@ public class StripeController {
         conf.readConfigFile("config.txt");
         Stripe.prepareStripes(conf);
 
-        new PWindow("StripeTester", "", 1000, 720, new DisplayMode(conf.image.width, conf.image.height), StripeController::eventHandler).startMainLoop();
+        new PWindow("StripeTester", "", 1000, 720, new DisplayMode(conf.image.width, conf.image.height), StripeController::eventHandler, conf.background).startMainLoop();
     }
 }

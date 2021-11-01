@@ -70,7 +70,7 @@ public class PWindow {
         }
     }
 
-    public PWindow(String name, String upperRightText, int windowWidth, int windowHeight, DisplayMode dm, Consumer<KeyEvent> eventHandler) {
+    public PWindow(String name, String upperRightText, int windowWidth, int windowHeight, DisplayMode dm, Consumer<KeyEvent> eventHandler, Bitmap bckg) {
         this.upperRightText = upperRightText;
 
         this.dm = dm;
@@ -78,6 +78,10 @@ public class PWindow {
         screenImage = new BufferedImage(dm.getContentWidth(), dm.getContentHeight(), BufferedImage.TYPE_INT_ARGB);
 
         screen = Utils.getLinkedBitmap(screenImage);
+
+        if (bckg != null) {
+            screen.draw_SC(bckg, 0, 0, 1, 1);
+        }
 
         this.width = windowWidth;
         this.height = windowHeight;
@@ -149,34 +153,18 @@ public class PWindow {
 
     public void startMainLoop() throws Exception {
         try {
+            canvas.draw(screenImage);
             running = true;
 
-            //Time in seconds
-            double lastTime = System.nanoTime() / 1000_000_000.0;
-            double deltaForTick = 0, deltaForDraw = 0;
-
-            //For fps measuring
-            double lastFPSCheck = 0;
-            long framesPerSecond = 0;
-
             while (running) {
-                //Time between cycles
+                double lastTime = System.nanoTime() / 1000_000_000.0;
+
+                double toSleep = StripeController.action(screen);
+                canvas.draw(screenImage);
+
                 double delta = (System.nanoTime() / 1000_000_000.0) - lastTime;
 
-                lastTime = System.nanoTime() / 1000_000_000.0;
-
-                StripeController.action(delta, screen);
-
-                double currentTime = (System.nanoTime() / 1000_000_000.0);
-
-                //Math real fps
-                if ((currentTime - lastFPSCheck) >= 1) {
-                    realFPS = (double) (framesPerSecond) / (double) (currentTime - lastFPSCheck);
-
-                    framesPerSecond = 0;
-                    lastFPSCheck = currentTime;
-                }
-                canvas.draw(screenImage);
+                Thread.sleep((long) (Math.max(toSleep - delta, 0) * 1000.0));
             }
         } catch (Exception e) {
             Logger.warn("WindowImpl", "Exception in window main loop." + e.getClass().getSimpleName());
