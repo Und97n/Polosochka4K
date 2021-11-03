@@ -1,6 +1,6 @@
 image = example.png
 back=space_sky.jpg
-n=320
+n=32
 
 15 : 160 : 40
 0 : 10 : 40
