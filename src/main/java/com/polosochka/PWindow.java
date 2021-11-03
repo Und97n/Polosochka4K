@@ -8,24 +8,14 @@ import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
 public class PWindow {
-    public static final boolean SHOW_FPS_OPTION = true;
-
-    private static Cursor transparentCursor;
-    private static Robot robot;
-
     private final Bitmap screen;
 
     private final JFrame frame;
     private final MainCanvas canvas;
     private final BufferedImage screenImage;
 
-    // Text in upper right corner of window.
-    private final String upperRightText;
-
     private int width;
     private int height;
-
-    private DisplayMode dm;
 
     private int contentWidth;
     private int contentHeight;
@@ -34,47 +24,16 @@ public class PWindow {
 
     private boolean running, fullscreen;
 
-    private boolean contentUpdate;
-
-    private double mouseScreenX;
-    private double mouseScreenY;
-
-    private double mouseX;
-    private double mouseY;
-
-    private double mouseDx;
-    private double mouseDy;
-
-    private double realFPS;
-
     static {
         try {
             @SuppressWarnings("unused")
             Toolkit toolkit = Toolkit.getDefaultToolkit();
-
-            // Transparent 16 x 16 pixel cursor image.
-            BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-
-            // Create a new blank cursor.
-            transparentCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                    cursorImg, new Point(0, 0), "blank cursor");
-
         } catch (Exception e) {
             Logger.reportError("WindowImpl", "Problems with cursor creating.", e);
         }
-
-        try {
-            robot = new Robot();
-        } catch (Exception e) {
-            Logger.reportError("WindowImpl", "Problems with java.awt.Robot.", e);
-        }
     }
 
-    public PWindow(String name, String upperRightText, int windowWidth, int windowHeight, DisplayMode dm, Consumer<KeyEvent> eventHandler, Bitmap bckg) {
-        this.upperRightText = upperRightText;
-
-        this.dm = dm;
-
+    public PWindow(String name, int windowWidth, int windowHeight, DisplayMode dm, Consumer<KeyEvent> eventHandler, Bitmap bckg) {
         screenImage = new BufferedImage(dm.getContentWidth(), dm.getContentHeight(), BufferedImage.TYPE_INT_ARGB);
 
         screen = Utils.getLinkedBitmap(screenImage);
@@ -107,16 +66,6 @@ public class PWindow {
             @Override
             public void windowClosing(WindowEvent we) {
                 stopMainLoop();
-            }
-
-            @Override
-            public void windowActivated(WindowEvent we) {
-                contentUpdate = true;
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent we) {
-//				 contentUpdate = false;
             }
         });
 
@@ -206,9 +155,6 @@ public class PWindow {
             }
         }
     }
-    public Bitmap copyScreen() {
-        return screen.copy();
-    }
 
     private void reshape(int newWidth, int newHeight) {
 
@@ -235,7 +181,6 @@ public class PWindow {
                 scale = wrongScale;
                 wrongScale = tmp;
             }
-            ;
 
             contentWidth = (int) ((double) screen.width * scale);
             contentHeight = (int) ((double) screen.height * scale);
@@ -259,7 +204,6 @@ public class PWindow {
         frame.dispose();
     }
 
-
     private class MainCanvas extends Canvas {
         private static final long serialVersionUID = 1L;
 
@@ -267,7 +211,7 @@ public class PWindow {
             BufferStrategy bs = this.getBufferStrategy();
 
             if (bs == null) {
-                //Double fuffering
+                //Double buffering
                 this.createBufferStrategy(2);
                 return;
             }

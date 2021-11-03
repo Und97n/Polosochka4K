@@ -1,6 +1,5 @@
 package com.polosochka;
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 
 public class StripeController {
@@ -8,22 +7,20 @@ public class StripeController {
 
     private static int stripeOrderCounter = -1;
 
-    public static double action(Bitmap screen) throws InterruptedException {
+    public static double action(Bitmap screen) {
         if (conf != null) {
-            synchronized (StripeController.class) {
-                if (stripeOrderCounter <= 0 && conf.background != null) {
-                    screen.draw_SC(conf.background, 0, 0, 1 ,1);
-                }
+            if (stripeOrderCounter <= 0 && conf.background != null) {
+                screen.draw_SC(conf.background, 0, 0, 1, 1);
+            }
 
-                if (stripeOrderCounter >= 0 && stripeOrderCounter < conf.lines.length) {
-                    assert (screen.width == conf.image.width) && (screen.height == conf.image.height);
+            if (stripeOrderCounter >= 0 && stripeOrderCounter < conf.lines.length) {
+                assert (screen.width == conf.image.width) && (screen.height == conf.image.height);
 
-                    Stripe s = conf.lines[stripeOrderCounter++];
+                Stripe s = conf.lines[stripeOrderCounter++];
 
-                    s.draw(conf.image, screen);
+                s.draw(conf.image, screen);
 
-                    return s.getDelay();
-                }
+                return s.getDelay();
             }
         }
 
@@ -36,19 +33,6 @@ public class StripeController {
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             stripeOrderCounter = 0;
         }
-//        else if (e.getKeyChar() == 'r') {
-//            try {
-//                synchronized (StripeController.class) {
-//                    conf = new Configuration();
-//                    conf.readConfigFile("config.txt");
-//                }
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            } catch (Utils.FileLoadingException ex) {
-//                JOptionPane.showMessageDialog(null, ex.toString());
-//                System.exit(1);
-//            }
-//        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -56,6 +40,6 @@ public class StripeController {
         conf.readConfigFile("config.txt");
         Stripe.prepareStripes(conf);
 
-        new PWindow("StripeTester", "", 1000, 720, new DisplayMode(conf.image.width, conf.image.height), StripeController::eventHandler, conf.background).startMainLoop();
+        new PWindow("StripeTester", 1000, 720, new DisplayMode(conf.image.width, conf.image.height), StripeController::eventHandler, conf.background).startMainLoop();
     }
 }
