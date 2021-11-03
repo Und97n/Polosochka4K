@@ -1,7 +1,5 @@
 package com.polosochka;
 
-import java.util.Collection;
-
 public class Stripe {
     private final int index, transparency;
     private final double delay;
